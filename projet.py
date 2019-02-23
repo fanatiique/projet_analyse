@@ -10,6 +10,7 @@ import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import matplotlib.pyplot as plt # this is used for the plot the graph 
 import seaborn as sns # used for plot interactive graph.
+from scipy.special import boxcox1p
 
 #
 data = pd.read_csv("googleplaystore.csv")
@@ -61,5 +62,53 @@ g
 plt.title('Nombre d\'application pour chaque catégorie' ,size = 20)
 plt.savefig('count_cat.png',bbox_inches='tight')
 """
-reviews = data['Reviews']
-test=pd.Series(reviews).unique()
+
+print(data['Installs'].unique())
+data['Installs'] = data['Installs'].apply(lambda x: str(x).replace(',',''))
+data['Installs'] = data['Installs'].apply(lambda x: str(x).replace('+',''))
+data['Installs'] = data['Installs'].apply(lambda x: int(x))
+Sorted_value = sorted(list(data['Installs'].unique()))
+print(data.describe())
+
+skewness = data['Installs'].skew() 
+data['Installs'] =  boxcox1p(data['Installs'], 0.25)
+
+
+
+g = sns.catplot(x="Genres",y="Rating",data=data, kind="box", height = 10 ,
+palette = "Set1")
+g.set_xticklabels(rotation=90)
+
+g = g.set_ylabels("Rating")
+plt.title('Boxplot of Rating VS Category',size = 20)
+#data['Installs'].replace(Sorted_value,range(0,len(Sorted_value),1), inplace = True )
+g = sns.catplot(x="Installs",y="Rating",data=data, kind="box", height = 10 ,
+palette = "Set1")
+g.set_xticklabels(rotation=90)
+
+plt.title('Boxplot of Rating VS Category',size = 20)
+print(data['Price'].unique())
+
+print(data.dtypes)
+print(data['Reviews'].unique())
+data['Reviews'] = data['Reviews'].apply(lambda x: int(x))
+data['Type'] = data['Type'].apply(lambda x: str(x).replace('Free','0'))
+data['Type'] = data['Type'].apply(lambda x: str(x).replace('Paid','1'))
+data['Type'] = data['Type'].apply(lambda x: int(x))
+
+data['Price'] = data['Price'].apply(lambda x: str(x).replace('$',''))
+data['Price'] = data['Price'].apply(lambda x: float(x))
+
+
+corr = data.corr()
+mask = np.zeros_like(corr, dtype=np.bool)
+mask[np.triu_indices_from(mask)] = True
+f, ax = plt.subplots(figsize=(11, 9))
+cmap = sns.diverging_palette(220, 10, as_cmap=True)
+sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0,
+            square=True, linewidths=.5, cbar_kws={"shrink": .5})
+
+#data=pd.get_dummies(data['Content Rating'])
+print (data['Type'].unique())
+# Traitement de la variable Reviews
+#
