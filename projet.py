@@ -62,6 +62,13 @@ g
 plt.title('Nombre d\'application pour chaque catégorie' ,size = 20)
 plt.savefig('count_cat.png',bbox_inches='tight')
 """
+"""
+g = sns.catplot(x="Content Rating",y="Rating",data=data, kind="box", height = 10 ,
+palette = "Set1")
+g.set_xticklabels(rotation=90)
+plt.title('Boxplot Note VS Content Rating',size = 20)
+plt.savefig('box_content_rating.png',bbox_inches='tight')
+"""
 
 print(data['Installs'].unique())
 data['Installs'] = data['Installs'].apply(lambda x: str(x).replace(',',''))
@@ -82,11 +89,11 @@ g.set_xticklabels(rotation=90)
 g = g.set_ylabels("Rating")
 plt.title('Boxplot of Rating VS Category',size = 20)
 #data['Installs'].replace(Sorted_value,range(0,len(Sorted_value),1), inplace = True )
-g = sns.catplot(x="Installs",y="Rating",data=data, kind="box", height = 10 ,
-palette = "Set1")
-g.set_xticklabels(rotation=90)
 
-plt.title('Boxplot of Rating VS Category',size = 20)
+
+
+
+
 print(data['Price'].unique())
 
 print(data.dtypes)
@@ -100,15 +107,24 @@ data['Price'] = data['Price'].apply(lambda x: str(x).replace('$',''))
 data['Price'] = data['Price'].apply(lambda x: float(x))
 
 
+
+
+
+#data=pd.get_dummies(data,columns=['Category'])
+#data=pd.get_dummies(data,columns=['Content Rating'])
+data=pd.get_dummies(data,columns=['Android Ver'])
+"""
 corr = data.corr()
 mask = np.zeros_like(corr, dtype=np.bool)
 mask[np.triu_indices_from(mask)] = True
 f, ax = plt.subplots(figsize=(11, 9))
 cmap = sns.diverging_palette(220, 10, as_cmap=True)
-sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0,
+sns.heatmap(corr,cmap=cmap, center=0,
             square=True, linewidths=.5, cbar_kws={"shrink": .5})
-
-#data=pd.get_dummies(data['Content Rating'])
-print (data['Type'].unique())
+plt.savefig('correl_with_android_version.png',bbox_inches='tight')
+"""
+plt.figure(figsize = (10,10))
+sns.regplot(x="Price", y="Rating", color = 'mediumspringgreen',data=data[data['Reviews']<1000000]);
+plt.title('Scatter plot Rating VS Price',size = 20)
 # Traitement de la variable Reviews
 #
